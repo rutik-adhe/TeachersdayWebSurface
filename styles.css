@@ -1,0 +1,120 @@
+body {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    font-family: system-ui;
+    font-size: 16px;
+    font-weight: 600;
+    overflow-y: scroll;
+    overflow-x: hidden;
+
+
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+
+}
+
+.main {
+    min-height: calc(100vh - 115px);
+    background-image: url('./assets/back2.png');
+    background-position: center;
+    color: white;
+    position: relative;
+
+}
+
+.textbox {
+    width: 80%;
+    height: 40px;
+    border-radius: 50px;
+    outline: none;
+    border: 5px solid #0000001f;
+    background-color: #0000003d;
+    color: #ffffff;
+    text-align: center;
+    justify-self: center;
+    display: block;
+    font-size: 1rem;
+    font-weight: 600;
+    font-family: sans-serif;
+}
+
+.header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    background: navy;
+    color: white;
+    font-weight: 700;
+    height: 45px;
+    align-items: center;
+}
+
+.price {
+    text-align: center;
+    padding-top: 15px;
+    font-size: 1.2rem;
+    color: #ffe200;
+    text-shadow: 3px 3px 7px #000000;
+}
+
+.que {
+    font-size: 1.5rem;
+    font-weight: 700;
+    padding: 15px;
+    background-image: url('./assets/cont1.png');
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    background-position: center;
+    margin: 10px 20px;
+}
+
+.option,
+.lock {
+    margin: 20px 0;
+    width: 90%;
+    height: 60px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding-left: 15px;
+    box-sizing: border-box;
+    justify-self: center;
+}
+
+.option {
+    background-image: url('./assets/option.png');
+}
+
+.lock {
+    background-image: url('./assets/lock.png');
+    padding-left: 30px;
+}
+
+.lock:hover {
+    background-image: url('./assets/lock_hover.png');
+}
+
+.option:hover {
+    background-image: url('./assets/option_hover.png');
+}
+
+.footer {
+    bottom: 0;
+    height: 70px;
+    background: black;
+    text-align: center;
+    align-content: center;
+    font-size: 1rem;
+    width: 100%;
+    color: white;
+    font-family: monospace;
+}
+
+.hide {
+    display: none;
+}

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="./styles.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body>
+    <div class="header">
+        <span class="title">VNIT CSE - KBC</span>
+        <span class="time hide" id="timer">Time: 60secs</span>
+    </div>
+    <div class="main hide" id="waitPage">
+        <h2 style="padding: 20px;">Waiting for Department Council to Start Game.</h2>
+    </div>
+    <div class="main hide" id="startPage">
+        <div class="option">Enter your Name</div>
+        <input type="text" class="textbox" id="username" value="Prof User001">
+        <div class="lock" id="playBtn">PLAY</div>
+    </div>
+    <div class="main hide" id="mainPage">
+        <div class="price" id="username"></div>
+        <div class="que" id="queBox"></div>
+    </div>
+    <div class="footer">
+        Designed & Developed by <br>CSE Department Council 2025-26
+    </div>
+    <script type="module">
+        let queData = []
+        const response = await fetch('./que.json');
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        queData = await response.json();
+
+        const ws = new WebSocket("ws://10.71.236.195:8082");
+
+        const nameBox = document.getElementById('username');
+        const waitPage = document.getElementById('waitPage')
+        const startPage = document.getElementById('startPage')
+        const mainPage = document.getElementById('mainPage')
+
+        const queBox = document.getElementById('queBox');
+        const username = document.getElementById('username');
+        const maxQues = 2
+
+        let optionSelected = 0;
+        const optionsEle = []
+        let lockEle, lockState = 0;
+
+        function handleOptionClick() {
+
+        }
+
+        function getOptionDiv(optionTxt) {
+            const optionDiv = document.createElement('div');
+            optionDiv.classList.add('option');
+            optionDiv.innerHTML = optionTxt;
+            return optionDiv;
+        }
+
+        function loadQue(i) {
+            optionSelected = 0;
+            lockState = 0;
+            const queObj = queData[i]
+            timer.innerHTML = `Time: ${queData.t} secs`
+
+            queBox.innerHTML = queObj['q'];
+            if (lockEle) lockEle.remove();
+            lockEle = document.createElement('div');
+            lockEle.classList = 'lock'
+            lockEle.innerHTML = "LOCK"
+            lockEle.addEventListener('click', () => {
+                // change to grey class of options
+                if (!lockState) lockState = 1;
+            })
+
+            for (let k = 0; k < 4; k++) {
+                const optionTxt = queObj.a[k]
+                if (optionsEle[k]) optionsEle[k].remove();
+                optionsEle[k] = getOptionDiv(optionTxt);
+                optionsEle[k].addEventListener('click', () => {
+                    if (!lockState) optionSelected = k + 1;
+                    // also change class of selected option
+                    serverSend({ m: 8, d: { q: i, a: k + 1, id: localStorage.getItem('id') } })
+                })
+                queBox.parentNode.appendChild(optionsEle[k]);
+            }
+            queBox.parentNode.appendChild(lockEle);
+        }
+
+        function switchPage(num, queIndex) {
+            timer.classList.add('hide')
+            if (num == 1) {
+                startPage.classList.remove('hide')
+                if (!waitPage.classList.contains('hide')) waitPage.classList.add('hide')
+                if (!mainPage.classList.contains('hide')) mainPage.classList.add('hide')
+            }
+            if (num == 2) {
+                waitPage.classList.remove('hide')
+                if (!startPage.classList.contains('hide')) startPage.classList.add('hide')
+                if (!mainPage.classList.contains('hide')) mainPage.classList.add('hide')
+            }
+            if (num == 3) {
+                timer.classList.remove('hide')
+                mainPage.classList.remove('hide')
+                if (!waitPage.classList.contains('hide')) waitPage.classList.add('hide')
+                if (!startPage.classList.contains('hide')) startPage.classList.add('hide')
+
+                if (queIndex >= maxQues) {
+                    console.log('Result page')
+                } else {
+                    loadQue(queIndex)
+                }
+            }
+        }
+
+        function serverSend(obj) {
+            ws.send(JSON.stringify(obj));
+        }
+        function startEvent() {
+            const userID = localStorage.getItem('id');
+            if (userID) {
+                serverSend({ m: 1, d: userID });
+            } else {
+                switchPage(1)
+            }
+        }
+        ws.addEventListener("open", () => {
+            console.log('Connected');
+
+            startEvent()
+        })
+
+        const playBtn = document.getElementById('playBtn');
+        playBtn.addEventListener('click', () => {
+            serverSend({ m: 2, d: nameBox.value });
+        })
+
+        ws.addEventListener("message", msg => {
+            msg = JSON.parse(msg.data);
+            console.log(msg)
+            if (msg.m == 1) {
+                if (!msg.s) {
+                    console.log('Run Name Page')
+                    switchPage(1);
+                }
+            }
+            else if (msg.m == 2) {
+                if (msg.s) {
+                    localStorage.setItem('name', msg.d.n);
+                    localStorage.setItem('id', msg.d.id);
+                    startEvent();
+                } else {
+                    console.log('Fail Registration')
+                }
+            }
+            else if (msg.m == 4) {
+                timer.classList.remove('hide')
+                timer.innerHTML = `Time: ${msg.d} secs`
+            }
+            else if (msg.m == 5) {
+                if (msg.d == 1) {
+                    switchPage(3, msg.d2)
+                }
+                else if (msg.d == 0) {
+                    switchPage(2)
+                }
+                else if (msg.d == 2) {
+                    // Result page
+                    switchPage(4)
+                }
+            }
+        })
+
+    </script>
+</body>
+
+</html>

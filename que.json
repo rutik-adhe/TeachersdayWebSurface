@@ -1,0 +1,26 @@
+[
+    {
+        "q": "This is First Question of KBC",
+        "a": [
+            "OPTION ONE",
+            "OPTION TWO",
+            "OPTION THREE",
+            "OPTION FOUR"
+        ],
+        "c": 2,
+        "t":15,
+        "media": "./assets/janmashtami.mp4"
+    },
+    {
+        "q": "This is Second Question of KBC",
+        "a": [
+            "OPTION ONE",
+            "OPTION TWO",
+            "OPTION THREE",
+            "OPTION FOUR"
+        ],
+        "c": 3,
+        "t":10,
+        "media": "./assets/janmashtami.mp4"
+    }
+]
